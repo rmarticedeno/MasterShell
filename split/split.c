@@ -6,23 +6,32 @@ int size;
 
 char* line;
 char** split(char *, const char *);
+char* wd;
 
+void fforf(int, char**);
+void execute(int, char**);
 void ffree(char**);
 
 int main(int args, const char** argv)
 {
     line = malloc(150 * sizeof(char));
+    wd = malloc(500 * sizeof(char));
+    getwd(wd);
     int a = 0;
-    printf("$:");
-    getline(&line,&a,stdin);
-    char** test = split(line, " ");
-    for(int i = 0; i < size; ++i)
+    while(1)
     {
-        printf("%s\n", test[i]);
+        printf("~%s$ ", wd);
+        getline(&line,&a,stdin);
+        char** test = split(line, " ");
+//         for(int i = 0; i < size; ++i)
+//         {
+//             printf("%s\n", test[i]);
+//         }
+        execute(size, test);
+        //execvp(test[0],test);
+        ffree(test);
+        free(line);
     }
-    execvp(test[0],test);
-    ffree(test);
-    free(line);
 }
 
 char** split(char* string, const char* pattr)
@@ -87,4 +96,66 @@ void ffree(char** sub)
     }
     free(sub);
 }
- 
+
+void execute(int args, char** argv)
+{
+    if(!strcmp(argv[0], "cd"))
+    {
+        if(args != 2)
+        {
+            printf("Cantidad de argumentos inválida");
+            return;
+        }
+        else
+        {
+            if(chdir(argv[1]))
+            {
+                perror("cd");
+            }
+            else
+            {
+                printf("%s\n",getwd(wd));
+            }
+        }
+    }
+    else if(!strcmp(argv[0], "exit"))
+    {
+        exit(0);
+    }
+    else
+    {
+        ffork(args, argv);
+    }
+}
+
+void ffork(int args, char** argv)
+{
+   int pid = fork();
+    if (!pid)
+    {
+        char** par = malloc((args) * sizeof(char));
+        int i;
+        for(i = 0; i <= args; ++i)
+        {
+            if (i != args)
+            {
+                par[i] = argv[i];
+            }
+            else
+            {
+                par[i] = NULL;
+            }
+        }
+        execvp(argv[0],par);
+    }
+    else
+    {
+        int status;
+        wait(&status);
+        if(!WIFEXITED(status))
+        {
+            perror("fork");
+        }
+    }
+}
+
