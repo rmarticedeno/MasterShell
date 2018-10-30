@@ -1,6 +1,9 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <unistd.h>
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <fcntl.h>
 #include ".config.h"
 
 int size; //tamaño de cada línea a parsear empezando en 1
@@ -48,7 +51,6 @@ int main(int args, const char** argv)
         printf(format, user, hostname, wd); // format definido en .config.h
         getline(&line,&getln_a,stdin);
         command* cmds = split_commands(line);
-    	cprint(cmds);
     	int fd = 0;
     	while(cmds->id) {
     		fd = execute(*cmds, fd);
@@ -80,8 +82,8 @@ char** split(char* string, const char* pattr) // cuando hay espacios al final, s
     int size1 = 10; //buffer de la cantidad de char*
     int size2 = 50; //buffer del tamaño de los char*
     int j = 0; // cantidad de char*
-    
-    for(int i = 0; *string; ++string)
+    int i;
+    for(i = 0; *string; ++string)
     {
         if(i == size2)
         {
@@ -172,32 +174,44 @@ int execute(command cmd, int input_fd) //ejecutar un comando
         int pid = fork();
 	    if (!pid)
 	    {
-    		dup2(input_fd, 0);
-    		close(p[0]);
-    		dup2(p[1], 1);
-    		close(p[1]);
+		close(p[0]);   		
     		// primero sin considerar >, <, >>
-    		char** par = malloc((cmd.args) * sizeof(char*));
-    		int i;
-    		for(i = 0; i <= cmd.args; ++i)
-    		{
-    		    if (i != cmd.args)
-    		    {
-    		        par[i] = cmd.argv[i];
-    		    }
-    		    else
-    		    {
-    		        par[i] = NULL;
-    		    }
+    		char** par = malloc((cmd.args + 1) * sizeof(char*));
+    		int i, j, fdin = input_fd, fdout = p[1];
+    		for(i = 0, j = 0; i < cmd.args; ++j, ++i)
+    		{	
+			if(!strcmp(cmd.argv[i], ">")) {
+				close(fdout);
+				if (fdout = open(cmd.argv[++i], O_WRONLY) < 0 ) { fdout = open(cmd.argv[i], O_WRONLY | O_CREAT, 0644); }
+			}
+			else if(!strcmp(cmd.argv[i], "<")) {
+				if(fdin) { close(fdin); }
+				fdin = open(cmd.argv[++i], O_RDONLY);
+			}
+			else if(!strcmp(cmd.argv[i], ">>")) {
+				close(fdout);
+				if (fdout = open(cmd.argv[++i], O_WRONLY | O_APPEND) < 0 ) { fdout = open(cmd.argv[i], O_WRONLY | O_CREAT, 0644); }
+			}
+			else { par[j] = cmd.argv[i]; }  
     		}
+		par[j] = NULL;
+
+		dup2(fdin, 0);
+		close(fdin);
+
+		dup2(fdout, 1);
+    		close(fdout);
+
     		execvp(cmd.argv[0],par);
     		exit(EXIT_FAILURE);
 	    }
 	    else
 	    {
+		close(p[1]);
+
     		int status;
     		wait(&status);
-    		close(p[1]);
+
     		if(!WIFEXITED(status))
     		{
     		    perror(cmd.argv[0]); // imprime el error del comando correspondiente
