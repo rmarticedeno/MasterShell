@@ -20,6 +20,11 @@ char* wd; // directorio actual de trabajo
 history* h; // historial
 queue* childs; // los pids de los procesos hijos
 int last_status; // status del ultimo hijo
+int gpid,pgpid; // gpid del proceso a guardar en background
+int backgpid; // gpid del proceso en background que se le hizo wait
+int bg; //1 si se tiene que ejecutar el comando en background
+int changed; //si getline devolvio error
+int finish; //terminar de hacer wait a el proceso
 
 void init(); // inicializa todos los buffers
 void welcome(); // mensaje de bienvenida
@@ -83,6 +88,7 @@ void init() {
 
     childs = init_queue(); // crea la pila de los hijos
     signal(SIGINT, handler); // cambiar el handler para la senhal de interrupcion
+    signal(SIGCHLD, Handler); // handler de SIGCHLD para procesos en background
     
     welcome();
 }
