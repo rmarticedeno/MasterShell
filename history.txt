@@ -1,11 +1,3 @@
-./wait.out | grep s
-./wait.out &
-jobs
-exit
-./wait.out > a.txt
-ls -l
-ls -l | cat
-ps -o pid,ppid,pgid > a.txt < cat
 ps -o pid,ppid,pgid > a.txt
 a.txt < cat
 ls
@@ -47,4 +39,12 @@ yeahhhhhhhhhhhhhh
 sleep 3 &
 ls
 ls --color
+exit
+ping localhost | grep s
+ping localhost | grep s --coloir
+ping localhost | grep s --coloir --color
+ping localhost | grep s --color
+exit
+ping localhost | grep s &
+fg 0
 exit

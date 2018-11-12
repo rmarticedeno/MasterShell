@@ -32,6 +32,7 @@ void welcome(); // mensaje de bienvenida
 void quit(int); // terminar
 int execute(command*, int); //dada una linea parseada ejecuta el comando correspondiente
 int check_bg(char*); // para varificar si hay que madar los procesos al background
+int IsNumber(char*); // para saber si el char* es un numero
 typedef void(*sighandler_t)(int);
 void handler(int); // para controlar las interrupciones
 
@@ -39,9 +40,18 @@ int main(int args, const char** argv) {
     init();
 
     while(1) {
+        gpid = pgpid = backgpid = -1;
+        bg = finish = 0;
         getcwd(wd, wd_buffer); // obtener el directorio actual
-        printf(format, user, hostname, wd); // format definido en .config.h
-        getline(&line, &getln_a, stdin);
+        if(!changed)
+        {
+            printf(format, user, hostname, wd); // format definido en .config.h
+        }
+        else
+        {
+            changed = 0;
+        }
+        if(getline(&line, &getln_a, stdin) == -1) { changed = 1; continue; }
 
         char** sline = split(line, "\n"); // remover fin de linea
 
@@ -54,7 +64,7 @@ int main(int args, const char** argv) {
 
                 store_line(h, pline); // guardar en el historial
 
-                int bg = check_bg(pline); // ver si tiene un & al final
+                bg = check_bg(pline); // ver si tiene un & al final
 
                 command* cmds = split_commands(pline); // divir los comandos por los pipes |
 
@@ -136,7 +146,7 @@ void welcome() {
     printf("                           @....@             @....@                            \n");
     printf("                            @@@@               @@@@                             \n");
     printf("                                                                                \n");
-    printf("                           Roberto Marti Cedenho C312                           \n");
+    printf("                           Roberto Marti Cedeño C312                            \n");
     printf("                        Daniel Alberto Garcia Perez C312                        \n"RESET);
     getline(&line, &getln_a, stdin);
     system("clear");
@@ -160,6 +170,41 @@ int execute(command* cmd, int input_fd) { //ejecutar un comando, si no es final 
         if(cmd->args != 2) { printf("MasterShell: cd: too many arguments\n"); } // si existen mas de 2 argumentos imprimir error
         else if(cmd->start && cmd->final && chdir(cmd->argv[1])) { printf("MasterShell: cd: "); fflush(stdout); perror(cmd->argv[1]); } // si el chdir retorna error
     }
+    else if(!strcmp(cmd->id, "jobs"))
+    {
+        close(p[1]);
+        if(cmd->args != 1) { printf("MasterShell: jobs: too many arguments\n"); }
+        else { bkprint(&back); }
+    }
+    else if(!strcmp(cmd->id, "fg"))
+    {
+        close(p[1]);
+        if(cmd->args != 2) { printf("MasterShell: fg: too many arguments\n"); }
+        else
+        {
+            if(!IsNumber(cmd->argv[1]))
+            {
+                backgpid = bkseek(atoi(cmd->argv[1]),&back);
+            }
+            else
+            {
+                backgpid = bkseekbyname(cmd->argv[1],&back);
+            }
+            if(backgpid == -1){ printf("MasterShell: fg: command not found\n"); }
+            else
+            {
+                int number = bkseeknumber(backgpid,&back);
+                int cont = back.count[number];
+                bksilentdelete(backgpid,&back);
+                siginfo_t sig;
+                do
+                {
+                    waitid(P_PGID, backgpid, &sig, WEXITED);
+                }
+                while(--cont && !finish);
+            }
+        }
+    }
     else if(!strcmp(cmd->id, "exit")) { //si se escribe el comando exit salir de la consola
     	close(p[1]);
     	if(cmd->start && cmd->final) {
@@ -171,6 +216,18 @@ int execute(command* cmd, int input_fd) { //ejecutar un comando, si no es final 
         int pid = fork();
 
 	    if (!pid) { // el hijo se encarga de ejecutar el comando
+            if (bg) 
+            {
+                if(gpid == -1) 
+                {
+                    setpgid(0,0);
+                    gpid = pid;
+                }
+                else
+                {
+                    setpgid(pid,gpid);
+                }
+            }
 			close(p[0]);
 
     		char** params = calloc((cmd->args + 1) * sizeof(char*), sizeof(char*));
@@ -207,6 +264,10 @@ int execute(command* cmd, int input_fd) { //ejecutar un comando, si no es final 
             if(!strcmp(params[0], "history")) { show_history(h); exit(0); }
 
     		execvp(params[0], params);
+            if(bg)
+            {
+                deleteall(pid, &back);
+            }
     		exit(2);
 	    }
 	    else {
@@ -252,4 +313,22 @@ void handler(int sig) {
 		printf("\n"); 
 		while(!empty(childs)) { kill(pop(childs), sig); } 
 	}
+	if(backgpid != -1)
+    {
+        killpg(backgpid, sig);
+    }
+}
+
+int IsNumber(char* s)
+{
+    char* a = s;
+    while(*a)
+    {
+        if(*a < 48 || *a > 57)
+        {
+            return 1;
+        }
+        ++a;
+    }
+    return 0;
 }
