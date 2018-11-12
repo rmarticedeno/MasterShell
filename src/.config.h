@@ -13,7 +13,7 @@
 #define NEGRITA "\x1b[1m"
 #define PROMPTUSER GREEN NEGRITA 
 #define PROMPTPATH YELLOW NEGRITA
-#define SHELL BLACK NEGRITA
+#define SHELL RED NEGRITA
 #define TOOLS CYAN NEGRITA
 
 int wd_buffer = 500;

@@ -72,7 +72,7 @@ char* space_pipes(char* string) {
 		s[j++] = string[i];
 	}
 	
-	s = realloc(s, j * sizeof(char));
+	s = realloc(s, ++j * sizeof(char));
 	return s;
 }
 

@@ -1,25 +1,3 @@
-ls &
-exit
-ls &
-exit
-ls &
-exit
-ls &
-ls
-fg 0
-make
-exit
-ls &
-exi
-exot
-exit
-ls&
-[A
-ls &
-make
-exit
-ls 6
-ls &
 ps
 ps -o pid,ppid,pgid
 exit
@@ -47,4 +25,26 @@ exit
 ./wait.out | grep s
 ./wait.out &
 jobs
+exit
+./wait.out > a.txt
+ls -l
+ls -l | cat
+ps -o pid,ppid,pgid > a.txt < cat
+ps -o pid,ppid,pgid > a.txt
+a.txt < cat
+ls
+cat a.txt
+a.txt < cat
+ls &
+jobs
+./wait.out &
+jobs
+fg 0
+exit
+make run
+exit
+make
+exi
+exit
+ping localhost | sort
 exit

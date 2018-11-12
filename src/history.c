@@ -128,10 +128,7 @@ void store_line(history* h, char* line) {
 char* load_line(history* h, char* start) {
 	int i, n = strlen(start);
 	for(i = h->count; i >= 0; --i) {
-        if(!strcmp(itoa(i + 1), start)) { return h->lines[i]; } // caso del numero de linea
-		if(!strncmp(h->lines[i], start, n) && (h->lines[i][n] == ' ' || h->lines[i][n] == '\n')) { 
-			return h->lines[i];
-		} // caso del inicio de linea
+        if(!strcmp(itoa(i + 1), start) || !strncmp(h->lines[i], start, n)) { return h->lines[i]; }
 	}
 	return 0;
 }
