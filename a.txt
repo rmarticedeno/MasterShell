@@ -1,0 +1,8 @@
+a.txt
+bin
+history.txt
+Makefile
+shell
+SHELL.md
+src
+wait.out

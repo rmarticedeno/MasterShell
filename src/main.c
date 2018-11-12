@@ -14,7 +14,7 @@
 #include "background.h"
 
 char* line; // línea a parsear
-char* pline; //linea con los cambios del history
+char* rline; //linea con los cambios del history
 char* hostname; // nombre de la maquina
 char* user; // nombre de usuario
 char* wd; // directorio actual de trabajo
@@ -57,9 +57,11 @@ int main(int args, const char** argv) {
 
         if(*sline) {
             char* herror;
-            pline = process_line(h, *sline, &herror); // procesar los comandos de reutilizacion
-
+            char* pline = process_line(h, *sline, &herror); // procesar los comandos de reutilizacion
+            
             if(!strlen(herror)) { // si no hay errores
+                rline = calloc((strlen(pline) + 1) * sizeof(char), sizeof(char));
+                strcpy(rline, pline);
                 if(strcmp(*sline, pline)) { printf("%s\n", pline); }
 
                 store_line(h, pline); // guardar en el historial
@@ -83,7 +85,7 @@ int main(int args, const char** argv) {
             else { printf("MasterShell: !%s: event not found\n", herror); }
             free(herror), free(pline);
         }
-        free(sline);
+        free(sline), free(rline);
     }
 }
 
@@ -277,12 +279,12 @@ int execute(command* cmd, int input_fd) { //ejecutar un comando, si no es final 
                 {
                     setpgid(pid,pid);
                     pgpid = pid;
-                    bkinsert(pid,pid,pline,&back);
+                    bkinsert(pid,pid,rline,&back);
                 }
                 else
                 {
                     setpgid(pid,pgpid);
-                    bkinsert(pid,pgpid,pline,&back);
+                    bkinsert(pid,pgpid,rline,&back);
                 }
             }
             //if(!cmd->bg)

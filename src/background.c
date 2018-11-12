@@ -37,7 +37,7 @@ int bkinsert(int pid, int pgid , char* name,struct bgl* input)
             input -> gpid[i] = pgid;
             input -> used[i] = 1;
             input -> pid[i] = pid;
-            input -> name[i] = malloc(strlen(name)* sizeof(char));
+            input -> name[i] = malloc((strlen(name) + 1)* sizeof(char));
             strcpy(input->name[i], name);
             ++input -> count[i];
             input->maxcount[i] = input->count[i];

@@ -1,35 +1,3 @@
-ps -o pid,ppid,pgid > a.txt
-a.txt < cat
-ls
-cat a.txt
-a.txt < cat
-ls &
-jobs
-./wait.out &
-jobs
-fg 0
-exit
-make run
-exit
-make
-exi
-exit
-ping localhost | sort
-exit
-ls
-ls --color
-cat | grep p --color
-sleep 10 | ls
-sleep 10 | ls --color
-sleep 10 | ls --color &
-ls
-history
-clear
->a.txt ls
-cat a.txt
-ping localhost | grep s &
-fg 0
-exit
 history
 ping localhost | grep s > a.txt &
 ls
@@ -46,5 +14,37 @@ ping localhost | grep s --coloir --color
 ping localhost | grep s --color
 exit
 ping localhost | grep s &
+fg 0
+exit
+ping localhost | grep s &
+fg 0
+<a.txt ls
+< a.txt ls
+> a.txt ls
+> a.txt ls &
+ping localhost | grep s &
+fg 0
+hostory
+history
+ping localhost | grep s & &
+josb
+jobs
+fg 0
+ls
+jobs
+sleep 10 &
+fg sleep
+jobs
+sleep 10 &
+fg slee
+jobs
+exit
+ping localhost | grep s 
+ping localhost | grep s  &
+jobs
+fg 0
+exit
+ping localhost | grep s --color
+ping localhost | grep s --color &
 fg 0
 exit
