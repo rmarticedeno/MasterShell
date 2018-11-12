@@ -14,6 +14,7 @@
 #include "background.h"
 
 char* line; // línea a parsear
+char* pline; //linea con los cambios del history
 char* hostname; // nombre de la maquina
 char* user; // nombre de usuario
 char* wd; // directorio actual de trabajo
@@ -46,7 +47,7 @@ int main(int args, const char** argv) {
 
         if(*sline) {
             char* herror;
-            char* pline = process_line(h, *sline, &herror); // procesar los comandos de reutilizacion
+            pline = process_line(h, *sline, &herror); // procesar los comandos de reutilizacion
 
             if(!strlen(herror)) { // si no hay errores
                 if(strcmp(*sline, pline)) { printf("%s\n", pline); }
@@ -209,7 +210,22 @@ int execute(command* cmd, int input_fd) { //ejecutar un comando, si no es final 
     		exit(2);
 	    }
 	    else {
-            if(!cmd->bg) { push(childs, pid); }
+            if(cmd->bg)
+            {
+                if(pgpid == -1) 
+                {
+                    setpgid(pid,pid);
+                    pgpid = pid;
+                    bkinsert(pid,pid,pline,&back);
+                }
+                else
+                {
+                    setpgid(pid,pgpid);
+                    bkinsert(pid,pgpid,pline,&back);
+                }
+            }
+            //if(!cmd->bg)
+            else { push(childs, pid); }
 			close(p[1]);
         }
     }

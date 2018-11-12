@@ -1,27 +1,3 @@
-ps
-ps -o pid,ppid,pgid
-exit
-ls &
-exit
-ping localhost | grep s &
-fg 0
-ps
-ps > a.txt
-ping localhost | grep s > a.txt &
-ls
-ps
-fg 0
-ps
-jobs
-ping localhost | grep s > a.txt
-ps
-josb
-ping localhost | grep s > a.txt
-ping localhost | grep s > a.txt &
-fg 0
-ping localhost | grep s > b.txt
-ps
-exit
 ./wait.out | grep s
 ./wait.out &
 jobs
@@ -47,4 +23,28 @@ make
 exi
 exit
 ping localhost | sort
+exit
+ls
+ls --color
+cat | grep p --color
+sleep 10 | ls
+sleep 10 | ls --color
+sleep 10 | ls --color &
+ls
+history
+clear
+>a.txt ls
+cat a.txt
+ping localhost | grep s &
+fg 0
+exit
+history
+ping localhost | grep s > a.txt &
+ls
+ls --color
+sleep 10 &
+yeahhhhhhhhhhhhhh
+sleep 3 &
+ls
+ls --color
 exit
