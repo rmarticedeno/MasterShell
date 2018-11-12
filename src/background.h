@@ -23,6 +23,7 @@ int bksilentdelete(int,struct bgl*);
 int deleteall(int, struct bgl*);
 void Signal(int, void*, int);
 void SIGCHLD_Handler(int, siginfo_t*, void*);
+int substring(char*, char*);
 void Handler(int);
 char* Debackground(char*);
 //void initialize(struct bgl*);

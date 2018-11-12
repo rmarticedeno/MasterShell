@@ -5,6 +5,7 @@
 #include <sys/types.h>
 #include "background.h"
 #include <stdio.h>
+#include <wait.h>
 #include <errno.h>
 
 void bkprint(struct bgl* input)

@@ -1,5 +1,3 @@
-history
-ping localhost | grep s > a.txt &
 ls
 ls --color
 sleep 10 &
@@ -47,4 +45,6 @@ exit
 ping localhost | grep s --color
 ping localhost | grep s --color &
 fg 0
+exit
+exi
 exit
