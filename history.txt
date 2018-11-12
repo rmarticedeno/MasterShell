@@ -1,0 +1,50 @@
+ls &
+exit
+ls &
+exit
+ls &
+exit
+ls &
+ls
+fg 0
+make
+exit
+ls &
+exi
+exot
+exit
+ls&
+[A
+ls &
+make
+exit
+ls 6
+ls &
+ps
+ps -o pid,ppid,pgid
+exit
+ls &
+exit
+ping localhost | grep s &
+fg 0
+ps
+ps > a.txt
+ping localhost | grep s > a.txt &
+ls
+ps
+fg 0
+ps
+jobs
+ping localhost | grep s > a.txt
+ps
+josb
+ping localhost | grep s > a.txt
+ping localhost | grep s > a.txt &
+fg 0
+ping localhost | grep s > b.txt
+ps
+exit
+./wait.out | grep s
+./wait.out &
+jobs
+exit
